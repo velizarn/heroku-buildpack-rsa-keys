@@ -10,7 +10,7 @@ $ heroku buildpacks:add -a appname https://github.com/velizarn/heroku-buildpack-
 
 ## How to use
 
-Optional ENV variables:
+Optional config variables:
 
 - _RSA_NUMBITS_ - The size of the private key to generate in bits. This must be the last option specified. The default is _1024_ and values less than 512 are not allowed.
 - _RSA_PRIVATEKEYPATH_ - Path where to store private key file, default '_./private_key.pem_'
@@ -18,6 +18,11 @@ Optional ENV variables:
 - _RSA_COMMAND_ENV_ - additional command to execute after RSA keys generation, if needed, e.g.
 ```
 echo export RSA_PUBLIC_KEY_BASE_64=$(cat $RSA_PUBLICKEYPATH | base64 -w 0) >$BUILD_DIR/.profile.d/rsakeys.sh
+```
+
+This command will set numbits value to 1024 and path to keys files in _/app/keys/_ directory
+```sh
+$ heroku config:set -a appname RSA_NUMBITS=1024 RSA_PRIVATEKEYPATH=./keys/private_key.pem RSA_PUBLICKEYPATH=./keys/public_key.pem
 ```
 
 ## Resources
