@@ -2,6 +2,12 @@
 
 Heroku buildpack to generate RSA public/private keys
 
+## Install
+
+```sh
+$ heroku buildpacks:add -a appname https://github.com/velizarn/heroku-buildpack-rsa-keys
+```
+
 ## How to use
 
 Optional ENV variables:
