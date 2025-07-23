@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+# fail fast
+set -e
+
+# debug
+# set -x
+
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+arrow() {
+  sed -u 's/^/-----> /'
+}
+indent() {
+  sed -u 's/^/       /'
+}
+
+RSA_NUMBITS=$(cat $ENV_DIR/RSA_NUMBITS 2>/dev/null || echo 1024)
+RSA_PRIVATEKEYPATH=$(cat $ENV_DIR/RSA_PRIVATEKEYPATH 2>/dev/null || echo "./private_key.pem")
+RSA_PUBLICKEYPATH=$(cat $ENV_DIR/RSA_PUBLICKEYPATH 2>/dev/null || echo "./public_key.pem")
+
+RSA_PRIVATEKEYPATH=$(realpath -m $BUILD_DIR/$RSA_PRIVATEKEYPATH)
+RSA_PUBLICKEYPATH=$(realpath -m $BUILD_DIR/$RSA_PUBLICKEYPATH)
+
+# Ensure the directories for the keys exist
+
+if [ ! -d $(dirname $RSA_PRIVATEKEYPATH) ]; then
+  mkdir -p $(dirname $RSA_PRIVATEKEYPATH)
+fi
+
+if [ ! -d $(dirname $RSA_PUBLICKEYPATH) ]; then
+  mkdir -p $(dirname $RSA_PUBLICKEYPATH)
+fi
+
+echo "Generating RSA key pair with size of $RSA_NUMBITS bits..." | arrow
+
+openssl genrsa -out $RSA_PRIVATEKEYPATH $RSA_NUMBITS 2>/dev/null
+
+echo "Private key generated at: $RSA_PRIVATEKEYPATH" | indent
+
+openssl rsa -in $RSA_PRIVATEKEYPATH -pubout -out $RSA_PUBLICKEYPATH 2>/dev/null
+
+echo "Public key generated at: $RSA_PUBLICKEYPATH" | indent
+
+if [ -f $ENV_DIR/RSA_COMMAND_ENV ]; then
+  RSA_COMMAND=$( cat $ENV_DIR/RSA_COMMAND_ENV )
+  echo "RSA_COMMAND_ENV found, executing additional command..." | indent
+  eval $RSA_COMMAND
+else
+  echo "No RSA_COMMAND_ENV found, skipping command execution." | indent
+fi
