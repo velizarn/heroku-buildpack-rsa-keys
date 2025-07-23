@@ -20,9 +20,9 @@ Optional config variables:
 echo export RSA_PUBLIC_KEY_BASE_64=$(cat $RSA_PUBLICKEYPATH | base64 -w 0) >$BUILD_DIR/.profile.d/rsakeys.sh
 ```
 
-This command will set numbits value to 1024 and path to keys files in _/app/keys/_ directory
+Following command will set numbits value to 1024 and path to key files in app root directory:
 ```sh
-$ heroku config:set -a appname RSA_NUMBITS=1024 RSA_PRIVATEKEYPATH=./keys/private_key.pem RSA_PUBLICKEYPATH=./keys/public_key.pem
+$ heroku config:set -a appname RSA_NUMBITS=1024 RSA_PRIVATEKEYPATH=./private_key.pem RSA_PUBLICKEYPATH=./public_key.pem
 ```
 
 ## Resources
